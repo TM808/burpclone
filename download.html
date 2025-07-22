@@ -1,0 +1,1475 @@
+<!-- <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="software" class="block text-sm font-medium text-gray-700">Select Software</label>
+                    <select id="software" name="software" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Choose software...</option>
+                        <option value="software-a">Software A</option>
+                        <option value="software-b">Software B</option>
+                        <option value="software-c">Software C</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium">Data Collection Consent</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-download" name="consent-download" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-download" class="ml-2 block text-sm text-gray-700">
+                                I consent to the download and installation of the selected software on my device.
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-tracking" name="consent-tracking" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-tracking" class="ml-2 block text-sm text-gray-700">
+                                I agree to the collection of basic download statistics (timestamp, completion status).
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent-privacy" name="consent-privacy" required
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="consent-privacy" class="ml-2 block text-sm text-gray-700">
+                                I have read and agree to the Privacy Policy and Terms of Service.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your privacy matters to us. We only collect essential information needed to process your download
+                        and improve our service. Your data will never be sold or shared with third parties.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Start Download
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                software: formData.get('software'),
+                consent: {
+                    download: formData.get('consent-download') === 'on',
+                    tracking: formData.get('consent-tracking') === 'on',
+                    privacy: formData.get('consent-privacy') === 'on'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Follow the redirect instead of expecting JSON
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your download request.');
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Software - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Software Distribution Platform</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/products" class="hover:text-blue-200">Products</a>
+                <a href="/about" class="hover:text-blue-200">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Software</h2>
+            
+            <form id="downloadForm" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" -->

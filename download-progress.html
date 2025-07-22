@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Progress - Ethical Distribution Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <main class="container mx-auto py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Download Progress</h2>
+            
+            <div class="space-y-6">
+                <div class="relative pt-1">
+                    <div class="flex mb-2 items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                                Progress
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            <span id="progress-percentage" class="text-xs font-semibold inline-block text-blue-600">
+                                0%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                        <div id="progress-bar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div id="download-status" class="text-center text-gray-700">
+                    Preparing your download...
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md">
+                    <p class="text-sm text-blue-700">
+                        Your download will begin automatically. Please do not close this window.
+                        Once complete, you'll be prompted to save or run the software.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Get download ID from URL
+        const downloadId = window.location.pathname.split('/').pop();
+        let progress = 0;
+
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-percentage');
+            const statusText = document.getElementById('download-status');
+
+            progressBar.style.width = `${percent}%`;
+            progressText.textContent = `${percent}%`;
+
+            if (percent < 30) {
+                statusText.textContent = 'Preparing download...';
+            } else if (percent < 60) {
+                statusText.textContent = 'Downloading...';
+            } else if (percent < 90) {
+                statusText.textContent = 'Verifying download...';
+            } else if (percent === 100) {
+                statusText.textContent = 'Download complete!';
+                // Start the actual file download
+                window.location.href = `/api/download/${downloadId}`;
+            }
+        }
+
+        // Poll for actual download status
+        async function checkStatus() {
+            try {
+                const response = await fetch(`/api/download-status/${downloadId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to check status');
+                }
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('download-status').textContent = `Error: ${data.error}`;
+                    return;
+                }
+
+                updateProgress(data.progress || 0);
+
+                if (data.status === 'completed') {
+                    updateProgress(100);
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
+                document.getElementById('download-status').textContent = 'Error checking download status';
+            }
+        }
+
+        // Check status immediately and then every 2 seconds
+        checkStatus();
+        const statusInterval = setInterval(checkStatus, 2000);
+    </script>
+</body>
+</html>

