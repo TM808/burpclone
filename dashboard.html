@@ -3,79 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Dashboard - Software Distribution Platform</title>
+    <title>Educational Monitoring Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-    <nav class="bg-blue-600 text-white p-4">
+    <nav class="bg-orange-600 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Download Dashboard</h1>
+            <h1 class="text-2xl font-bold">📊 Monitoring Dashboard</h1>
+            <span class="text-sm bg-green-500 px-2 py-1 rounded">LIVE</span>
         </div>
     </nav>
 
-    <main class="container mx-auto py-12">
-        <div class="bg-white p-8 rounded-lg shadow-md">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Download Statistics</h2>
-                <div class="text-gray-600">
-                    Total Downloads: <span id="totalDownloads">0</span>
-                </div>
+    <main class="container mx-auto py-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-gray-700">Total Executions</h3>
+                <p class="text-3xl font-bold text-blue-600" id="totalDownloads">0</p>
             </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-gray-700">System Data</h3>
+                <p class="text-3xl font-bold text-green-600" id="totalSystemInfo">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-gray-700">Successful</h3>
+                <p class="text-3xl font-bold text-purple-600" id="successfulExecutions">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-gray-700">Last Activity</h3>
+                <p class="text-sm font-bold text-orange-600" id="lastActivity">None</p>
+            </div>
+        </div>
 
+        <!-- System Information Table -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">💻 System Information Collected</h2>
+                <button onclick="fetchData()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Refresh</button>
+            </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full table-auto">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Software</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                            <th class="px-4 py-2 text-left">ID</th>
+                            <th class="px-4 py-2 text-left">Hostname</th>
+                            <th class="px-4 py-2 text-left">OS</th>
+                            <th class="px-4 py-2 text-left">Architecture</th>
+                            <th class="px-4 py-2 text-left">User</th>
+                            <th class="px-4 py-2 text-left">Memory</th>
+                            <th class="px-4 py-2 text-left">Client IP</th>
+                            <th class="px-4 py-2 text-left">Timestamp</th>
+                            <th class="px-4 py-2 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="systemInfoList" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="9" class="px-4 py-8 text-center text-gray-500">No data collected yet. Execute the script to see information here.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Execution Log Table -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">📥 Execution Log</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left">ID</th>
+                            <th class="px-4 py-2 text-left">User</th>
+                            <th class="px-4 py-2 text-left">IP Address</th>
+                            <th class="px-4 py-2 text-left">Software</th>
+                            <th class="px-4 py-2 text-left">Status</th>
+                            <th class="px-4 py-2 text-left">Timestamp</th>
                         </tr>
                     </thead>
                     <tbody id="downloadsList" class="bg-white divide-y divide-gray-200">
-                        <!-- Download records will be inserted here -->
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No executions yet. Visit the main page to trigger script execution.</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
+    <!-- System Details Modal -->
+    <div id="systemModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
+        <div class="flex justify-center items-center h-full">
+            <div class="bg-white p-6 rounded-lg max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+                <h3 class="text-lg font-bold mb-4">System Details</h3>
+                <div id="systemDetails"></div>
+                <button onclick="closeModal()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        async function fetchDownloads() {
+        let systemDataGlobal = [];
+        
+        async function fetchData() {
             try {
-                const response = await fetch('/api/downloads');
+                console.log('🔄 Fetching data from server...');
+                const response = await fetch('/api/data');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('📊 Data received:', data);
                 
+                const downloads = data.downloads || [];
+                const systemData = data.systemInfo || [];
+                
+                // Update statistics
+                document.getElementById('totalDownloads').textContent = downloads.length;
+                document.getElementById('totalSystemInfo').textContent = systemData.length;
+                document.getElementById('successfulExecutions').textContent = downloads.filter(d => d.status === 'completed').length;
+                
+                // Update last activity
+                if (downloads.length > 0) {
+                    const lastDownload = downloads[downloads.length - 1];
+                    document.getElementById('lastActivity').textContent = new Date(lastDownload.timestamp).toLocaleTimeString();
+                } else {
+                    document.getElementById('lastActivity').textContent = 'None';
+                }
+                
+                // Update downloads table
                 const downloadsList = document.getElementById('downloadsList');
-                document.getElementById('totalDownloads').textContent = data.length;
+                if (downloads.length === 0) {
+                    downloadsList.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No executions yet. Visit the main page to trigger script execution.</td></tr>';
+                } else {
+                    downloadsList.innerHTML = downloads.map(download => `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 font-medium">${download.id}</td>
+                            <td class="px-4 py-2">${download.user.name}</td>
+                            <td class="px-4 py-2">${download.user.ipAddress}</td>
+                            <td class="px-4 py-2">${download.software}</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 rounded text-xs ${
+                                    download.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                    download.status === 'failed' ? 'bg-red-100 text-red-800' : 
+                                    'bg-yellow-100 text-yellow-800'
+                                }">✅ ${download.status}</span>
+                            </td>
+                            <td class="px-4 py-2">${new Date(download.timestamp).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                }
                 
-                downloadsList.innerHTML = data.map(download => `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">${download.id}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${download.user.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${download.user.email}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${download.software}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                ${download.status === 'completed' ? 'bg-green-100 text-green-800' : 
-                                  download.status === 'failed' ? 'bg-red-100 text-red-800' : 
-                                  'bg-yellow-100 text-yellow-800'}">                                
-                                ${download.status}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">${new Date(download.timestamp).toLocaleString()}</td>
-                    </tr>
-                `).join('');
+                // Update system information table
+                const systemInfoList = document.getElementById('systemInfoList');
+                if (systemData.length === 0) {
+                    systemInfoList.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-gray-500">No data collected yet. Execute the script to see information here.</td></tr>';
+                } else {
+                    systemInfoList.innerHTML = systemData.map(system => `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 font-medium">${system.id}</td>
+                            <td class="px-4 py-2">${system.hostname}</td>
+                            <td class="px-4 py-2">${system.os}</td>
+                            <td class="px-4 py-2">${system.architecture}</td>
+                            <td class="px-4 py-2">${system.user}</td>
+                            <td class="px-4 py-2">${system.memory_gb} GB</td>
+                            <td class="px-4 py-2">${system.clientIP}</td>
+                            <td class="px-4 py-2">${new Date(system.timestamp).toLocaleString()}</td>
+                            <td class="px-4 py-2">
+                                <button onclick="showSystemDetails(${system.id})" class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">Details</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+                
+                // Show success message if data exists
+                if (downloads.length > 0 || systemData.length > 0) {
+                    console.log('✅ Dashboard updated successfully!');
+                }
+                
             } catch (error) {
-                console.error('Error fetching downloads:', error);
+                console.error('❌ Error fetching data:', error);
+                // Show error in the UI
+                const downloadsList = document.getElementById('downloadsList');
+                downloadsList.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-red-500">Error loading data. Check console for details.</td></tr>';
             }
         }
-
-        // Fetch downloads immediately and then every 30 seconds
-        fetchDownloads();
-        setInterval(fetchDownloads, 30000);
+        
+        function showSystemDetails(id) {
+            const system = systemDataGlobal.find(s => s.id === id);
+            if (system) {
+                document.getElementById('systemDetails').innerHTML = `
+                    <div class="space-y-2">
+                        <p><strong>ID:</strong> ${system.id}</p>
+                        <p><strong>Hostname:</strong> ${system.hostname}</p>
+                        <p><strong>Operating System:</strong> ${system.os} ${system.os_version}</p>
+                        <p><strong>Architecture:</strong> ${system.architecture}</p>
+                        <p><strong>Processor:</strong> ${system.processor}</p>
+                        <p><strong>User:</strong> ${system.user}</p>
+                        <p><strong>CPU Count:</strong> ${system.cpu_count}</p>
+                        <p><strong>Memory:</strong> ${system.memory_gb} GB</p>
+                        <p><strong>Python Version:</strong> ${system.python_version}</p>
+                        <p><strong>Client IP:</strong> ${system.clientIP}</p>
+                        <p><strong>Timestamp:</strong> ${new Date(system.timestamp).toLocaleString()}</p>
+                    </div>
+                `;
+                document.getElementById('systemModal').classList.remove('hidden');
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('systemModal').classList.add('hidden');
+        }
+        
+        // Fetch data immediately when page loads
+        fetchData();
+        
+        // Refresh data every 3 seconds
+        setInterval(fetchData, 3000);
     </script>
 </body>
 </html>
