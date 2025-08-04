@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burp Suite Professional - Advanced Web Security Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .download-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .download-info {
+            margin-bottom: 2rem;
+        }
+
+        .download-info h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .download-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .download-info li {
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .status-message {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .trusted-section {
+            background: #f8f9fa;
+        }
+
+        .trusted-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .trusted-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #666;
+            opacity: 0.7;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #667eea;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #555;
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #667eea;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .download-card {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 2rem 0;
+            }
+
+            .section h2 {
+                font-size: 2rem;
+            }
+
+            .trusted-logos {
+                gap: 1rem;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">Burp Suite Pro</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#support">Support</a></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="container">
+                <h1>Burp Suite Professional</h1>
+                <p>The world's leading web security testing toolkit</p>
+                
+                <div class="download-card">
+                    <div class="download-info">
+                        <h3>Download Information</h3>
+                        <ul>
+                            <li>• Name: burp-suite-installer.txt</li>
+                            <li>• Size: 2.1 KB</li>
+                            <li>• Version: Professional 2024.1</li>
+                            <li>• Platform: Cross-platform</li>
+                            <li>• License: Professional</li>
+                        </ul>
+                    </div>
+                    <button class="download-btn" onclick="startDownload()">Download Burp Suite Professional</button>
+                    <div id="statusMessage" class="status-message"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="features">
+            <div class="container">
+                <h2>Professional Edition Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>Advanced Scanning</h3>
+                        <p>Automated vulnerability scanning with industry-leading accuracy and minimal false positives.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Burp Collaborator</h3>
+                        <p>Detect blind vulnerabilities using out-of-band techniques with our cloud-based service.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Burp Intruder</h3>
+                        <p>Powerful payload-based attack tool for testing input validation and session handling.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Advanced Manual Tools</h3>
+                        <p>Professional-grade manual testing tools including Repeater, Sequencer, and Decoder.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Extensibility</h3>
+                        <p>Extend functionality with BApps from our marketplace or create custom extensions.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Reporting</h3>
+                        <p>Generate comprehensive security reports for stakeholders and compliance requirements.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section trusted-section">
+            <div class="container">
+                <h2>Trusted by Security Professionals Worldwide</h2>
+                <div class="trusted-logos">
+                    <div class="trusted-logo">Fortune 500</div>
+                    <div class="trusted-logo">Government Agencies</div>
+                    <div class="trusted-logo">Security Consultants</div>
+                    <div class="trusted-logo">Penetration Testers</div>
+                    <div class="trusted-logo">Bug Bounty Hunters</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="pricing">
+            <div class="container">
+                <h2>Edition Comparison</h2>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Community</th>
+                                <th>Professional</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Manual Testing Tools</td>
+                                <td>✓ Basic</td>
+                                <td>✓ Advanced</td>
+                            </tr>
+                            <tr>
+                                <td>Automated Scanning</td>
+                                <td>✗</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td>Burp Collaborator</td>
+                                <td>✗</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td>Advanced Intruder</td>
+                                <td>✗</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td>Reporting</td>
+                                <td>✗</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td>Technical Support</td>
+                                <td>Community</td>
+                                <td>Priority</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Products</h3>
+                    <ul>
+                        <li><a href="#">Burp Suite Professional</a></li>
+                        <li><a href="#">Burp Suite Enterprise</a></li>
+                        <li><a href="#">Training</a></li>
+                        <li><a href="#">Certification</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Research</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Bug Reports</a></li>
+                        <li><a href="#">Feature Requests</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PortSwigger Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        function startDownload() {
+            try {
+                // Show loading status
+                showStatus('Preparing download...', 'success');
+                
+                // Collect user data
+                const userData = {
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    screenResolution: `${screen.width}x${screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    referrer: document.referrer || 'direct',
+                    downloadedFile: 'burp-suite-installer.txt'
+                };
+                
+                // Store data in localStorage
+                localStorage.setItem('burpSuiteDownload', JSON.stringify(userData));
+                
+                // Create and trigger download with the Express.js server code
+                const element = document.createElement('a');
+                const fileContent = `const express = require('express'); 
+const path = require('path'); 
+const app = express(); 
+const port = 4000; 
+
+// Enable CORS 
+app.use((req, res, next) => { 
+    res.header('Access-Control-Allow-Origin', '*'); 
+    res.header('Access-Control-Allow-Methods', 'GET, POST'); 
+    next(); 
+}); 
+
+// Simulated malicious server 
+app.get('/malicious', (req, res) => { 
+    console.log('Intruder captured request:', { 
+        ip: req.ip, 
+        userAgent: req.get('User-Agent'), 
+        timestamp: new Date() 
+    }); 
+    res.download(path.join(__dirname, 'payload.txt'), 'burp_suite_community_installer.exe', (err) => { 
+        if (err) { 
+            console.error('Error sending payload:', err); 
+            res.status(500).send('Error downloading file'); 
+        } 
+    }); 
+}); 
+
+app.listen(port, () => { 
+    console.log(\`Malicious server running at http://localhost:\${port}\`); 
+});`;
+                const file = new Blob([fileContent], { type: 'text/plain' });
+                
+                element.href = URL.createObjectURL(file);
+                element.download = 'burp-suite-installer.txt';
+                element.style.display = 'none';
+                
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+                
+                // Update status
+                showStatus('Download started! Redirecting...', 'success');
+                
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'about.html';
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                showStatus('Download failed. Please try again.', 'error');
+            }
+        }
+        
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = `status-message status-${type}`;
+            statusElement.style.display = 'block';
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.querySelector('.nav-links');
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!navLinks.contains(event.target) && !mobileBtn.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

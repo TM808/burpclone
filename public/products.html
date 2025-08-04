@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - PortSwigger Burp Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-orange-600">PortSwigger</h1>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="/" class="text-gray-500 hover:text-gray-700 px-1 pt-1 pb-4 text-sm font-medium">Home</a>
+                        <a href="/products.html" class="text-orange-600 border-b-2 border-orange-600 px-1 pt-1 pb-4 text-sm font-medium">Products</a>
+                        <a href="/about.html" class="text-gray-500 hover:text-gray-700 px-1 pt-1 pb-4 text-sm font-medium">About</a>
+                        <a href="#" class="text-gray-500 hover:text-gray-700 px-1 pt-1 pb-4 text-sm font-medium">Support</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="/" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        Back to Home
+                    </a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+                <a href="/" class="text-gray-500 hover:text-gray-700 block px-3 py-2 text-base font-medium">Home</a>
+                <a href="/products.html" class="text-orange-600 block px-3 py-2 text-base font-medium">Products</a>
+                <a href="/about.html" class="text-gray-500 hover:text-gray-700 block px-3 py-2 text-base font-medium">About</a>
+                <a href="#" class="text-gray-500 hover:text-gray-700 block px-3 py-2 text-base font-medium">Support</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-orange-500 to-red-600 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Our Products</h1>
+            <p class="text-xl opacity-90">Choose the right Burp Suite edition for your security testing needs</p>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Community Edition -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Burp Suite Community Edition</h3>
+                        <p class="text-gray-600 mb-6">The best manual web application security testing toolkit available</p>
+                        <div class="text-3xl font-bold text-gray-900 mb-6">Free</div>
+                        
+                        <h4 class="font-semibold text-gray-900 mb-3">Key Features:</h4>
+                        <ul class="space-y-2 mb-8">
+                            <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Intercepting Proxy</li>
+                            <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Application-aware Spider</li>
+                            <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Repeater Tool</li>
+                            <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Decoder and Comparer</li>
+                            <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Manual Testing Tools</li>
+                        </ul>
+                        
+                        <button class="w-full bg-gray-600 text-white py-3 rounded-md hover:bg-gray-700 transition-colors font-medium">
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Professional Edition -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-orange-500 relative">
+                    <div class="absolute top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 text-sm font-medium">
+                        Most Popular
+                    </div>
+                    <div class="p-8 pt-12">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Burp Suite Professional</h3>
+                        <p class="text-gray-600 mb-6">The world's leading toolkit for web application security testing</p>
+                        <div class="text-3xl font-bold text-gray-900 mb-6">$399<span class="text-lg text-gray-500">/year</span></div>
+                        
+                        <h4 class="font-semibold text-gray-900 mb-3">Everything in Community, plus:</h4>
+                        <ul class="space-y-2 mb-8">
+                            <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Automated Web Vulnerability Scanner</li>
+                           
+                            <li class="flex items-center"><span class="

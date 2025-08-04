@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .stat-card {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .refresh-animation {
+            animation: spin 1s linear;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .modal {
+            backdrop-filter: blur(8px);
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+                    </div>
+                    <span class="ml-4 px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full pulse">Live</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-500" id="currentTime"></div>
+                    <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            <div class="stat-card rounded-xl shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium">Total Sessions</p>
+                        <p class="text-4xl font-bold" id="totalSessions">0</p>
+                        <p class="text-orange-200 text-xs mt-1">All time</p>
+                    </div>
+                    <div class="p-3 bg-white bg-opacity-20 rounded-full">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card rounded-xl shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium">Today's Visits</p>
+                        <p class="text-4xl font-bold" id="todayVisits">0</p>
+                        <p class="text-orange-200 text-xs mt-1">Last 24 hours</p>
+                    </div>
+                    <div class="p-3 bg-white bg-opacity-20 rounded-full">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card rounded-xl shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium">Downloads</p>
+                        <p class="text-4xl font-bold" id="totalDownloads">0</p>
+                        <p class="text-orange-200 text-xs mt-1">Completed</p>
+                    </div>
+                    <div class="p-3 bg-white bg-opacity-20 rounded-full">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Controls -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                        </svg>
+                        Dashboard Controls
+                    </h2>
+                    <div class="flex space-x-3">
+                        <button onclick="exportData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            Export
+                        </button>
+                        <button onclick="refreshData()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center" id="refreshBtn">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                        <button onclick="clearAllData()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 012 0v4a1 1 0 11-2 0V7zM12 7a1 1 0 112 0v4a1 1 0 11-2 0V7z" clip-rule="evenodd"></path>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"></path>
+                    </svg>
+                    Recent Activity
+                </h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Timestamp</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Platform</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Screen</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="dataTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-96 overflow-y-auto fade-in">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-900">Session Details</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6" id="modalContent">
+                    <!-- Modal content will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = [];
+        
+        // Update current time
+        function updateTime() {
+            try {
+                const now = new Date();
+                const timeElement = document.getElementById('currentTime');
+                if (timeElement) {
+                    timeElement.textContent = now.toLocaleString();
+                }
+            } catch (e) {
+                console.log('Time update error:', e);
+            }
+        }
+        
+        // Load and display data
+        function loadData() {
+            try {
+                console.log('Loading dashboard data...');
+                const allData = [];
+                
+                // Get all localStorage data with correct key pattern
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('clientData_')) {
+                        try {
+                            const data = JSON.parse(localStorage.getItem(key));
+                            if (data) {
+                                data._key = key; // Store key for reference
+                                allData.push(data);
+                            }
+                        } catch (e) {
+                            console.log('Data parse error:', e);
+                        }
+                    }
+                }
+                
+                currentData = allData;
+                console.log('Total data entries found:', allData.length);
+                
+                // Update statistics
+                updateStatistics(allData);
+                
+                // Update table
+                updateDataTable(allData);
+                
+            } catch (e) {
+                console.log('Load data error:', e);
+            }
+        }
+        
+        function updateStatistics(data) {
+            try {
+                const totalSessions = data.length;
+                const today = new Date().toDateString();
+                const todayVisits = data.filter(d => {
+                    try {
+                        return new Date(d.timestamp).toDateString() === today;
+                    } catch (e) {
+                        return false;
+                    }
+                }).length;
+                const totalDownloads = data.filter(d => d.downloadStatus === 'completed').length;
+                
+                console.log('Statistics:', { totalSessions, todayVisits, totalDownloads });
+                
+                // Update elements safely (removed successRate)
+                const elements = {
+                    'totalSessions': totalSessions,
+                    'todayVisits': todayVisits,
+                    'totalDownloads': totalDownloads
+                };
+                
+                for (const [id, value] of Object.entries(elements)) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                }
+            } catch (e) {
+                console.log('Update statistics error:', e);
+            }
+        }
+        
+        function updateDataTable(data) {
+            try {
+                const tbody = document.getElementById('dataTableBody');
+                if (!tbody) return;
+                
+                tbody.innerHTML = '';
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">No data available. Visit the main page to generate data.</td></tr>';
+                    return;
+                }
+                
+                // Show last 20 entries, reversed to show newest first
+                data.slice(-20).reverse().forEach((item, index) => {
+                    try {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-gray-50 transition-colors';
+                        
+                        const timestamp = item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Unknown';
+                        const platform = item.platform || 'Unknown';
+                        const screen = item.screen || 'N/A';
+                        const status = item.downloadStatus === 'completed' ? 'Success' : 'Pending';
+                        const statusClass = item.downloadStatus === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                        
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${timestamp}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${platform}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${screen}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                    ${status}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="viewDetails(${data.length - 1 - index})" class="text-orange-600 hover:text-orange-900 transition-colors flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    View Details
+                                </button>
+                            </td>
+                        `;
+                        
+                        tbody.appendChild(row);
+                    } catch (e) {
+                        console.log('Row creation error:', e);
+                    }
+                });
+                
+                console.log('Table updated with', data.length, 'entries');
+            } catch (e) {
+                console.log('Update table error:', e);
+            }
+        }
+        
+        function viewDetails(index) {
+            try {
+                const item = currentData[currentData.length - 1 - index];
+                if (!item) return;
+                
+                const modalContent = document.getElementById('modalContent');
+                modalContent.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gray-900 mb-2">Session Information</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div><span class="font-medium">Timestamp:</span> ${item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Unknown'}</div>
+                                    <div><span class="font-medium">Platform:</span> ${item.platform || 'Unknown'}</div>
+                                    <div><span class="font-medium">Screen Resolution:</span> ${item.screen || 'N/A'}</div>
+                                    <div><span class="font-medium">Download Status:</span> 
+                                        <span class="px-2 py-1 text-xs rounded-full ${item.downloadStatus === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                            ${item.downloadStatus === 'completed' ? 'Success' : 'Pending'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gray-900 mb-2">User Agent</h4>
+                                <div class="text-sm text-gray-700 break-all">
+                                    ${item.userAgent || 'Unknown'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-900 mb-2">Raw Data</h4>
+                            <pre class="text-xs text-gray-600 overflow-x-auto">${JSON.stringify(item, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('detailModal').classList.remove('hidden');
+            } catch (e) {
+                console.log('View details error:', e);
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+        
+        function exportData() {
+            try {
+                const dataStr = JSON.stringify(currentData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analytics-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('Data exported successfully!');
+            } catch (e) {
+                console.log('Export error:', e);
+                alert('Export failed!');
+            }
+        }
+        
+        function refreshData() {
+            try {
+                const btn = document.getElementById('refreshBtn');
+                if (btn) {
+                    btn.classList.add('refresh-animation');
+                    setTimeout(() => {
+                        btn.classList.remove('refresh-animation');
+                        loadData();
+                    }, 1000);
+                } else {
+                    loadData();
+                }
+            } catch (e) {
+                console.log('Refresh error:', e);
+            }
+        }
+        
+        function clearAllData() {
+            try {
+                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith('clientData_')) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    
+                    console.log('Clearing', keysToRemove.length, 'data entries');
+                    keysToRemove.forEach(key => localStorage.removeItem(key));
+                    loadData();
+                    alert('Data cleared successfully!');
+                }
+            } catch (e) {
+                console.log('Clear data error:', e);
+            }
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                console.log('Dashboard initializing...');
+                updateTime();
+                loadData();
+                
+                // Auto-refresh every 5 seconds
+                setInterval(() => {
+                    updateTime();
+                    loadData();
+                }, 5000);
+                
+                console.log('Dashboard loaded successfully!');
+            } catch (e) {
+                console.log('Initialization error:', e);
+            }
+        });
+    </script>
+</body>
+</html>
