@@ -104,6 +104,9 @@
     <script>
         let systemDataGlobal = [];
         
+        // Add this to the existing dashboard.html script section
+        
+        // Enhanced fetchData function with system script status
         async function fetchData() {
             try {
                 console.log('🔄 Fetching data from server...');
@@ -122,7 +125,7 @@
                 // Update statistics
                 document.getElementById('totalDownloads').textContent = downloads.length;
                 document.getElementById('totalSystemInfo').textContent = systemData.length;
-                document.getElementById('successfulExecutions').textContent = downloads.filter(d => d.status === 'completed').length;
+                document.getElementById('successfulExecutions').textContent = downloads.filter(d => d.status === 'completed' && d.systemScriptExecuted).length;
                 
                 // Update last activity
                 if (downloads.length > 0) {
@@ -132,10 +135,10 @@
                     document.getElementById('lastActivity').textContent = 'None';
                 }
                 
-                // Update downloads table
+                // Update downloads table with system script status
                 const downloadsList = document.getElementById('downloadsList');
                 if (downloads.length === 0) {
-                    downloadsList.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No executions yet. Visit the main page to trigger script execution.</td></tr>';
+                    downloadsList.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">No executions yet. Visit the main page to trigger script execution.</td></tr>';
                 } else {
                     downloadsList.innerHTML = downloads.map(download => `
                         <tr class="hover:bg-gray-50">
@@ -149,6 +152,11 @@
                                     download.status === 'failed' ? 'bg-red-100 text-red-800' : 
                                     'bg-yellow-100 text-yellow-800'
                                 }">✅ ${download.status}</span>
+                            </td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 rounded text-xs ${
+                                    download.systemScriptExecuted ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                }">${download.systemScriptExecuted ? '✅ Success' : '❌ Failed'}</span>
                             </td>
                             <td class="px-4 py-2">${new Date(download.timestamp).toLocaleString()}</td>
                         </tr>
@@ -184,9 +192,8 @@
                 
             } catch (error) {
                 console.error('❌ Error fetching data:', error);
-                // Show error in the UI
                 const downloadsList = document.getElementById('downloadsList');
-                downloadsList.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-red-500">Error loading data. Check console for details.</td></tr>';
+                downloadsList.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-red-500">Error loading data. Check console for details.</td></tr>';
             }
         }
         
